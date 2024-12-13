@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics Dashboard</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+      }
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      thead {
+        background-color: #007bff;
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+      th,
+      td {
+        padding: 12px 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+      th {
+        text-transform: uppercase;
+        font-size: 12px;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      td {
+        font-size: 14px;
+      }
+      .overflow {
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Game Dashboard</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>AppID</th>
+            <th>Name</th>
+            <th>Release Date</th>
+            <th>Required Age</th>
+            <th>Price</th>
+            <th>DLC Count</th>
+            <th>About the Game</th>
+            <th>Supported Languages</th>
+            <th>Windows</th>
+            <th>Mac</th>
+            <th>Linux</th>
+            <th>Positive</th>
+            <th>Negative</th>
+            <th>Score Rank</th>
+            <th>Developers</th>
+            <th>Publishers</th>
+            <th>Categories</th>
+            <th>Genres</th>
+            <th>Tags</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+          <tr>
+            <td>{{ row.appid }}</td>
+            <td class="overflow" title="{{ row.name }}">{{ row.name }}</td>
+            <td>{{ row.release_date }}</td>
+            <td>{{ row.required_age }}</td>
+            <td>{{ row.price }}</td>
+            <td>{{ row.dlc_count }}</td>
+            <td class="overflow" title="{{ row.about_the_game }}">
+              {{ row.about_the_game }}
+            </td>
+            <td class="overflow" title="{{ row.supported_languages }}">
+              {{ row.supported_languages }}
+            </td>
+            <td>{{ row.windows }}</td>
+            <td>{{ row.mac }}</td>
+            <td>{{ row.linux }}</td>
+            <td>{{ row.positive }}</td>
+            <td>{{ row.negative }}</td>
+            <td>{{ row.score_rank }}</td>
+            <td class="overflow" title="{{ row.developers }}">
+              {{ row.developers }}
+            </td>
+            <td class="overflow" title="{{ row.publishers }}">
+              {{ row.publishers }}
+            </td>
+            <td class="overflow" title="{{ row.categories }}">
+              {{ row.categories }}
+            </td>
+            <td class="overflow" title="{{ row.genres }}">{{ row.genres }}</td>
+            <td class="overflow" title="{{ row.tags }}">{{ row.tags }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
