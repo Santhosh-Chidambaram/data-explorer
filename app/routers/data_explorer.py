@@ -59,7 +59,11 @@ def build_query(params: any) -> str:
                 value = f"'%{value}%'"
             else:
                 value = f"'{value}'"
-        elif column_type in ["Nullable(Date)", "DateTime DEFAULT now()"]:
+        elif column_type in [
+            "Nullable(Date)",
+            "DateTime DEFAULT now()",
+            "Array(String)",
+        ]:
             value = f"'{value}'"
         query_parts.append(f"{column} {sql_operator} {value}")
     return " AND ".join(query_parts)
@@ -90,6 +94,7 @@ def validate_filters(filters: List[dict]) -> None:
         # Check if the operation is valid for the column's data type
         allowed_operations = ALLOWED_OPERATIONS.get(column_type)
         if not allowed_operations or operation not in allowed_operations:
+            allowed_operations = allowed_operations or ["None"]
             raise InvalidOperationException(
                 column, operation, allowed_operations, column_type
             )

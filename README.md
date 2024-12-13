@@ -14,6 +14,7 @@ This README provides complete instructions for setting up and deploying the `Dat
 - [API Usage](#api-usage)
   - [Endpoints](#endpoints)
 - [Example Usage](#example-usage)
+- [Cost Estimations](#cost-estimations)
 
 ---
 
@@ -227,3 +228,46 @@ Queries the uploaded data using filters on specific columns.
 1. Use the **Upload CSV** endpoint to process your CSV file.
 2. Query the uploaded data using the **Query Data** endpoint with specific filters.
 
+---
+
+---
+
+## **Cost Estimations**
+
+#### **Assumptions**
+
+- **Average Queries Per Day**: 100 queries.
+- **Development Environment**: Active for 8 hours daily.
+- **Render.com Deployment**: Server hosted on Render.com for additional application needs.
+- **Pricing Model**: Based on ClickHouse's usage-based pricing model, including separate scaling of compute and storage resources.
+
+
+#### **ClickHouse Development Service**
+- **Compute Costs**:
+  - Active Usage: 4 hours daily.
+  - Monthly Compute Costs: $30 - $50 (30 days).
+
+- **Storage Costs**:
+  - Assumed included in development pricing unless data volumes exceed typical thresholds for moderate workloads.
+
+#### **Render.com Deployment**
+- Server hosted on Render.com for application deployment.
+- **Estimated Costs**: $0 per month (Free plan is  sufficent).
+
+#### **Cost Optimization Factors**
+- If the 100 daily queries are executed in fewer than 8 hours, compute resource utilization would scale down, reducing the overall cost.
+- Leveraging serverless auto-scaling further minimizes costs during idle periods.
+
+---
+
+### **Summary of Estimated Costs**
+| **Category**         | **Cost (USD)**  |
+|----------------------|-----------------|
+| Development Compute  | $30 - $50       |
+| Render.com Server    | $0             |
+| **Total Estimated**  | **$30 - $50**   |
+
+---
+
+
+For further details, we can check the official [ClickHouse Pricing Guide](https://clickhouse.com/pricing).

@@ -31,9 +31,9 @@ register_exception_handlers(app)
 app.include_router(date_explorer_router)
 
 
-@app.get("/", tags=["root"])
-async def root():
-    return {"DataExplorer": "Welcome to DataExplorer API"}
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request})
 
 
 @app.get("/health", tags=["health-check"])
@@ -54,3 +54,9 @@ async def dashboard_page(request: Request):
 @app.get("/upload", response_class=HTMLResponse)
 async def upload_page(request: Request):
     return templates.TemplateResponse("upload.html", {"request": request})
+
+
+# Route to render the query_builder.html
+@app.get("/query-builder", response_class=HTMLResponse)
+async def upload_page(request: Request):
+    return templates.TemplateResponse("query_builder.html", {"request": request})

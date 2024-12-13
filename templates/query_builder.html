@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Query Builder</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .filters {
+      background-color: #eaeaea;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .filters input,
+    .filters select {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .filters button {
+      background-color: #ff4d4f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .filters button:hover {
+      background-color: #d43c3e;
+    }
+    .add-row-btn {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .add-row-btn:hover {
+      background-color: #45a049;
+    }
+    .apply-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 15px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .apply-btn:hover {
+      background-color: #0056b3;
+    }
+    .results {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      max-height: 700px;
+      overflow-y: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #f1f1f1;
+    }
+    .overflow {
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Query Builder</h2>
+      <button class="add-row-btn" id="add-row">Add Row</button>
+    </div>
+
+    <div id="filters-container">
+      <!-- Dynamic filters will be added here -->
+    </div>
+
+    <button class="apply-btn" id="apply-filters">Apply Filters</button>
+
+    <div class="results" id="results">
+      <strong>Results:</strong>
+      <div id="results-data"></div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const columns = ['release_date', 'created_at', 'name', 'required_age'];
+      const operations = ["eq", "like", "lt", "gt", "lte", "gte"];
+      const filtersContainer = document.getElementById("filters-container");
+      const addRowButton = document.getElementById("add-row");
+      const applyFiltersButton = document.getElementById("apply-filters");
+      const resultsData = document.getElementById("results-data");
+
+      // Add a new filter row
+      function addFilterRow() {
+        const filterRow = document.createElement("div");
+        filterRow.classList.add("filters");
+
+        filterRow.innerHTML = `
+          <select class="filter-column">
+            ${columns.map(column => `<option value="${column}">${column}</option>`).join("")}
+          </select>
+          <select class="filter-operation">
+            ${operations.map(op => `<option value="${op}">${op}</option>`).join("")}
+          </select>
+          <input type="text" class="filter-value" placeholder="Value" />
+          <button class="remove-row">Delete</button>
+        `;
+
+        // Add event listener for the delete button
+        filterRow.querySelector(".remove-row").addEventListener("click", () => {
+          filterRow.remove();
+        });
+
+        filtersContainer.appendChild(filterRow);
+      }
+
+      // Convert results to HTML table
+      function generateTable(data) {
+        if (data.length === 0) {
+          return '<p>No data found</p>';
+        }
+
+        let table = '<table><thead><tr>';
+        
+        // Add headers
+        Object.keys(data[0]).forEach((key) => {
+          table += `<th>${key}</th>`;
+        });
+        table += '</tr></thead><tbody>';
+
+        // Add rows
+        data.forEach((row) => {
+          table += '<tr>';
+          Object.values(row).forEach((value) => {
+            if (value.length > 30) {
+                table += `<td  class="overflow">${value}</td>`;
+            } else  {
+                table += `<td>${value}</td>`;
+            }
+          });
+          table += '</tr>';
+        });
+
+        table += '</tbody></table>';
+        return table;
+      }
+
+      // Fetch data based on filters
+      function fetchData(filters) {
+        fetch("/data-explorer/query", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ filters }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            resultsData.innerHTML = generateTable(data.data);
+          })
+          .catch((error) => {
+            resultsData.innerHTML = `Error: ${error.message}`;
+          });
+      }
+
+      // Apply filters
+      applyFiltersButton.addEventListener("click", () => {
+        const filters = [];
+        const filterRows = filtersContainer.querySelectorAll(".filters");
+
+        filterRows.forEach(row => {
+          const column = row.querySelector(".filter-column").value;
+          const operation = row.querySelector(".filter-operation").value;
+          const value = row.querySelector(".filter-value").value.trim();
+
+          if (column && operation && value) {
+            filters.push({ column, operation, value });
+          }
+        });
+
+        fetchData(filters);
+      });
+
+      // Add the first row by default
+      addRowButton.addEventListener("click", addFilterRow);
+      addFilterRow();
+    });
+  </script>
+</body>
+</html>
