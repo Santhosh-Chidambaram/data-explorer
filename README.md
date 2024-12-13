@@ -2,6 +2,7 @@
 
 This README provides complete instructions for setting up and deploying the `Data Explorer` API, which allows users to upload CSV files and query the data using filters. It also includes API usage documentation.
 
+[DataExplorer Live](https://data-explorer-server.onrender.com/)
 ---
 
 ## Table of Contents
@@ -91,7 +92,7 @@ To deploy the application remotely, follow these steps:
     Example:
 
     ```sh
-    docker push santhoshr02/data-explorer:v0
+    docker push santhoshr02/data-explorer:v1
     ```
 
 3. **Deploy to Render.com:**

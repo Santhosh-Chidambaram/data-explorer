@@ -5,9 +5,10 @@ from app.schema import GAME_ANALYTICS_COLUMNS
 from app.utils import get_date_str
 from decouple import config
 from app.exceptions import DatabaseInsertErrorException
+import os
 
 # Define the environment configuration
-ENVIRONMENT = config("ENVIRONMENT", default="local")  # Add default value if not set
+ENVIRONMENT = os.environ.get("ENVIRONMENT") or "local"
 
 
 # Configure the Clickhouse client based on the environment
@@ -23,14 +24,14 @@ def get_client():
     """
     if ENVIRONMENT == "local":
         return clickhouse_connect.get_client(
-            host="localhost",
-            user="default",
+            host=config("DB_HOST"),
+            user=("DB_USER"),
         )  # Localhost config
     else:
         return clickhouse_connect.get_client(
-            host=config("DB_HOST"),
-            user=config("DB_USER"),
-            password=config("DB_PASSWORD"),
+            host=os.environ.get("DB_HOST"),
+            user=os.environ.get("DB_USER"),
+            password=os.environ.get("DB_PASSWORD"),
             secure=True,
         )
 
